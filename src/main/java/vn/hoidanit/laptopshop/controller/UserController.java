@@ -1,7 +1,10 @@
 package vn.hoidanit.laptopshop.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,19 +32,36 @@ public class UserController {
         return "hello";
     }
 
-    @RequestMapping("/admin/user")
+    @RequestMapping("/admin/user/createUser")
     public String getUserPage(Model model) {
         model.addAttribute("newUser", new User());
         return "admin/user/createUser";
     }
 
-    @RequestMapping(value = "/admin/user/create", method = RequestMethod.POST)
-    public String createUserPage(Model model, @ModelAttribute("newUser") User ngocvu) {
-        System.out.println("run here: " + ngocvu);
-        model.addAttribute("fullName", ngocvu.getEmail());
-        this.userService.handleSaveUser(ngocvu);
+    // lấy toàn bộ users và truyền vào table ở trang result.jsp
+    @RequestMapping(value = "/admin/user")
+    public String getAllUserPage(Model model) {
+        List<User> allUsers = this.userService.findAll(); // chạy vào service sau đó gọi thằng repository để lấy toàn bộ
+                                                          // users
+        model.addAttribute("users", allUsers); // gán toàn bộ records lấy được từ db ra và truyền vào biến users
         return "result";
     }
+
+    // Request tạo mới user để lưu vào db và sau đó chuyển hướng sang trang lấy toàn
+    // bộ users luôn
+    @RequestMapping(value = "/admin/user/create", method = RequestMethod.POST)
+    public String createUserPage(Model model, @ModelAttribute("newUser") User ngocvu) {
+        this.userService.handleSaveUser(ngocvu);
+        return "redirect:/admin/user"; // lấy toàn bộ users luôn
+    }
+
+    // @GetMapping("/admin/user/create")
+    // public String showUsers(Model model, @ModelAttribute("createUser") User
+    // ngocvu) {
+    // // List<User> users = this.userService.findAll();
+    // model.addAttribute("users", ngocvu);
+    // return "showTableUsers"; // Tên file JSP là users.jsp
+    // }
 
     @PostMapping("/submitUser")
     public String handleSubmit(@RequestParam String email,
