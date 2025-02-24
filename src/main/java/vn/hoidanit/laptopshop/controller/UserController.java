@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,6 +37,17 @@ public class UserController {
     public String getUserPage(Model model) {
         model.addAttribute("newUser", new User());
         return "admin/user/createUser";
+    }
+
+    @RequestMapping("/admin/user/{id}")
+    public String getUserDetail(Model model, @PathVariable long id) {
+        System.out.print("id: " + id);
+        model.addAttribute("id", id);
+        // model.addAttribute("email", id);
+        // model.addAttribute("id", id);
+        // model.addAttribute("id", id);
+
+        return "admin/user/detail";
     }
 
     // lấy toàn bộ users và truyền vào table ở trang result.jsp

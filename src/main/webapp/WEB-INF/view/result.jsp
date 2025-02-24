@@ -34,7 +34,8 @@
                                     <td>${user.fullName}</td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <button class="btn btn-success" onclick="viewUser(${user.id})">View</button>
+                                            <a href="/admin/user/${user.id}" class="btn btn-success">Update</a>
+                                            <!-- <button class="btn btn-success" onclick="viewUser(${user.id})">View</button> -->
                                             <button class="btn btn-warning"
                                                 onclick="updateUser(${user.id})">Update</button>
                                             <button class="btn btn-danger"
