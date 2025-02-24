@@ -1,7 +1,9 @@
 package vn.hoidanit.laptopshop.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import vn.hoidanit.laptopshop.service.UserService;
 import vn.hoidanit.laptopshop.domain.User;
 import vn.hoidanit.laptopshop.repository.UserRepository;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class UserController {
@@ -39,13 +42,93 @@ public class UserController {
         return "admin/user/createUser";
     }
 
+    @RequestMapping("/admin/user/updateUser/{id}")
+    public String updateUserPage(Model model, @PathVariable long id) {
+        User userInfo = this.userService.findById(id);
+        model.addAttribute("updateUser", userInfo);
+        return "admin/user/updateUser";
+    }
+
+    @GetMapping("/admin/user/deleteUser/{id}")
+    public String showDeletePage(@PathVariable Long id, Model model) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Invalid user ID: " + id);
+        }
+        // Thêm id vào model để hiển thị trong JSP
+        model.addAttribute("id", id);
+        // // Khởi tạo đối tượng deleteUser với id để binding
+        User deleteUser = new User();
+        deleteUser.setId(id);
+        model.addAttribute("deleteUser", deleteUser);
+        return "admin/user/deleteUser";
+    }
+
+    @PostMapping("/admin/user/delete")
+    public String deleteUser(@ModelAttribute("deleteUser") User deleteUser, Model model) {
+        try {
+            if (deleteUser.getId() == null || deleteUser.getId() <= 0) {
+                throw new IllegalArgumentException("Invalid user ID: " + deleteUser.getId());
+            }
+            this.userService.deleteById(deleteUser.getId());
+            model.addAttribute("message", "User with ID " + deleteUser.getId() + " deleted successfully!");
+            return "redirect:/admin/user"; // Trả về trang result.jsp để hiển thị kết quả
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", "Invalid user ID: " + e.getMessage());
+            return "error";
+        } catch (EmptyResultDataAccessException e) {
+            model.addAttribute("error", "User not found: " + e.getMessage());
+            return "error";
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to delete user: " + e.getMessage());
+            return "error";
+        }
+    }
+
+    @PostMapping("/admin/user/update")
+    public String updateUser(Model model, @ModelAttribute("updateUser") User updatedUser) {
+        try {
+            // Lấy user hiện tại từ database dựa trên id
+            User existingUser = this.userService.findById(updatedUser.getId());
+
+            // Chỉ cập nhật các trường bạn muốn thay đổi, giữ nguyên email và password
+            if (updatedUser.getFullName() != null) {
+                existingUser.setFullName(updatedUser.getFullName());
+            }
+            if (updatedUser.getAddress() != null) {
+                existingUser.setAddress(updatedUser.getAddress());
+            }
+            if (updatedUser.getPhone() != null) {
+                existingUser.setPhone(updatedUser.getPhone());
+            }
+
+            if (updatedUser.getEmail() != null) {
+                existingUser.setEmail(updatedUser.getEmail());
+            }
+
+            if (updatedUser.getPassword() != null) {
+                existingUser.setPassword(updatedUser.getPassword());
+            }
+
+            // Lưu lại user đã cập nhật
+            User savedUser = this.userService.handleSaveUser(existingUser);
+            model.addAttribute("userInfo", savedUser); // Sử dụng user đã được lưu để đảm bảo dữ liệu mới nhất
+
+            return "admin/user/updateResult";
+        } catch (Exception e) {
+            model.addAttribute("error", "Failed to update user: " + e.getMessage());
+            return "error";
+        }
+    }
+
     @RequestMapping("/admin/user/{id}")
     public String getUserDetail(Model model, @PathVariable long id) {
         System.out.print("id: " + id);
         model.addAttribute("id", id);
-        // model.addAttribute("email", id);
-        // model.addAttribute("id", id);
-        // model.addAttribute("id", id);
+        User userInfo = this.userService.findById(id);
+
+        model.addAttribute("email", userInfo.getEmail());
+        model.addAttribute("fullName", userInfo.getFullName());
+        model.addAttribute("address", userInfo.getAddress());
 
         return "admin/user/detail";
     }

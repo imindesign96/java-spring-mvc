@@ -13,8 +13,10 @@
 
         <body>
             <div class="container mt-4">
-                <h1 class="mb-4">Table users</h1>
-                <a href="/admin/user/createUser" class="btn btn-primary float-end mb-3">Create a user</a>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0">Table users</h1>
+                    <a href="/admin/user/createUser" class="btn btn-primary mb-0">Create a user</a>
+                </div>
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover">
@@ -34,12 +36,11 @@
                                     <td>${user.fullName}</td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <a href="/admin/user/${user.id}" class="btn btn-success">Update</a>
+                                            <a href="/admin/user/${user.id}" class="btn btn-success">View</a>
                                             <!-- <button class="btn btn-success" onclick="viewUser(${user.id})">View</button> -->
-                                            <button class="btn btn-warning"
-                                                onclick="updateUser(${user.id})">Update</button>
-                                            <button class="btn btn-danger"
-                                                onclick="deleteUser(${user.id})">Delete</button>
+                                            <a href="/admin/user/updateUser/${user.id}"
+                                                class="btn btn-warning">Update</a>
+                                            <a href="/admin/user/deleteUser/${user.id}" class="btn btn-danger"">Delete</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -50,25 +51,7 @@
             </div>
 
             <!-- Bootstrap JS and Popper.js (required for some Bootstrap features) -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            <script>
-                function viewUser(id) {
-                    alert("Viewing user with ID: " + id);
-                    // Thêm logic để chuyển hướng hoặc gọi API xem chi tiết
-                }
-
-                function updateUser(id) {
-                    alert("Updating user with ID: " + id);
-                    // Thêm logic để chuyển hướng hoặc gọi API cập nhật
-                }
-
-                function deleteUser(id) {
-                    if (confirm("Are you sure you want to delete user with ID: " + id + "?")) {
-                        alert("User with ID " + id + " deleted");
-                        // Thêm logic để gọi API xóa
-                    }
-                }
-            </script>
+            <script src=" https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         </body>
 
         </html>
